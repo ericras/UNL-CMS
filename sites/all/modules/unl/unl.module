@@ -1590,7 +1590,7 @@ function unl_filter_ssi_process($text, $filter, $format, $langcode, $cache, $cac
     $url = substr($match, 1, -1);
     $parts = parse_url($url);
     if (!isset($parts['scheme'])) {
-      $parts['scheme'] = $_SERVER['HTTPS'] ? 'https' : 'http';
+      $parts['scheme'] = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     }
     if (!isset($parts['host'])) {
       $parts['host'] = $_SERVER['HTTP_HOST'];
@@ -1631,7 +1631,7 @@ function unl_filter_ssi_process($text, $filter, $format, $langcode, $cache, $cac
       $ssiDepth = $_SERVER['HTTP_X_UNL_SSI_DEPTH'];
     }
     $ssiDepth++;
-    
+
     $context = stream_context_create(array(
       'http' => array(
         'header' => "x-unl-ssi-depth: $ssiDepth\r\n",
