@@ -1517,8 +1517,7 @@ function unl_query_alter(QueryAlterableInterface $query) {
 /**
  * Implementation of hook_filter_info()
  */
-function unl_filter_info()
-{
+function unl_filter_info() {
   return array(
     'unl_embed' => array(
       'title' => 'UNL Node Embed',
@@ -1540,8 +1539,7 @@ function unl_filter_info()
  *
  * Replace any instances of [[node:X]] in the $text with the content of node X's body.
  */
-function unl_filter_embed_process($text, $filter, $format, $langcode, $cache, $cache_id)
-{
+function unl_filter_embed_process($text, $filter, $format, $langcode, $cache, $cache_id) {
   static $processed_hashes = array();
 
   $text_hash = hash('sha256', $text);
@@ -1598,7 +1596,8 @@ function unl_filter_ssi_process($text, $filter, $format, $langcode, $cache, $cac
     if (isset($parts['path']) && substr($parts['path'], 0, 1) != '/') {
       if (variable_get('unl_use_base_tag')) {
         $parts['path'] = $GLOBALS['base_path'] . $parts['path'];
-      } else {
+      }
+      else {
         $parts['path'] = $GLOBALS['base_path'] . request_path() . '/' . $parts['path'];
       }
     }
@@ -1607,12 +1606,12 @@ function unl_filter_ssi_process($text, $filter, $format, $langcode, $cache, $cac
     }
     $url = $parts['scheme'] . '://' . $parts['host'] . $parts['path'];
 
-
     // If this is a request to another UNL site, add format=partial to the query.
     if (substr($parts['host'], -7) == 'unl.edu') {
       if (isset($parts['query']) && $parts['query']) {
         $parts['query'] .= '&';
-      } else {
+      }
+      else {
         $parts['query'] = '';
       }
       $parts['query'] .= 'format=partial';

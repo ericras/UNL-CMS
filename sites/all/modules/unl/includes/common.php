@@ -187,26 +187,25 @@ function unl_user_is_administrator() {
  * @param string $url
  * @param resource $context
  */
-function unl_url_get_contents($url, $context = NULL, &$headers = array())
-{
+function unl_url_get_contents($url, $context = NULL, &$headers = array()) {
   unl_load_zend_framework();
   if (!Zend_Uri::check($url)) {
     drupal_set_message('A non-url was passed to ' . __FUNCTION__ . '().', 'warning');
     return FALSE;
   }
-  
+
   // get some per-request static storage
   $static = &drupal_static(__FUNCTION__);
   if (!isset($static)) {
     $static = array();
   }
-  
+
   // If cached in the static array, return it.
   if (array_key_exists($url, $static)) {
     $headers = $static[$url]['headers'];
     return $static[$url]['body'];
   }
-  
+
   // If cached in the drupla cache, return it.
   $data = cache_get(__FUNCTION__ . $url);
   if ($data && time() < $data->data['expires']) {
@@ -217,13 +216,13 @@ function unl_url_get_contents($url, $context = NULL, &$headers = array())
   // Make the request
   $http_response_header = array();
   $body = file_get_contents($url, NULL, $context);
-  
+
   // If an error occured, just return it now.
   if ($body === FALSE) {
     $static[$url] = $body;
     return $body;
   }
-  
+
   $headers = array();
   foreach ($http_response_header as $rawHeader) {
     $headerName = trim(substr($rawHeader, 0, strpos($rawHeader, ':')));
@@ -233,10 +232,10 @@ function unl_url_get_contents($url, $context = NULL, &$headers = array())
     }
   }
   $lowercaseHeaders = array_change_key_case($headers);
-  
+
   $cacheable = NULL;
   $expires = 0;
-  
+
   // Check for a Cache-Control header and the max-age and/or private headers.
   if (array_key_exists('cache-control', $lowercaseHeaders)) {
     $cacheControl = strtolower($lowercaseHeaders['cache-control']);
@@ -257,7 +256,7 @@ function unl_url_get_contents($url, $context = NULL, &$headers = array())
     $cacheable = TRUE;
     $expires = DateTime::createFromFormat(DateTime::RFC1123, $lowercaseHeaders['expires'])->getTimestamp();
   }
-  
+
   // Save to the drupal cache if caching is ok
   if ($cacheable && time() < $expires) {
     $data = array(
@@ -274,6 +273,6 @@ function unl_url_get_contents($url, $context = NULL, &$headers = array())
         'headers' => $headers,
     );
   }
-  
+
   return $body;
 }
