@@ -839,12 +839,22 @@ function unl_page_alias_create($form, &$form_state) {
  * Form Validate: Create New Page Alias
  */
 function unl_page_alias_create_validate($form, &$form_state) {
-  if ($form_state['values']['from_uri'] == $form_state['values']['to_uri']) {
-    form_set_error('', t('From URL cannot equal To URL.'));
+  $form_state['values']['from_uri'] = trim($form_state['values']['from_uri']);
+  $form_state['values']['to_uri']   = trim($form_state['values']['to_uri']);
+
+  $from = $form_state['values']['from_uri'];
+  $to = $form_state['values']['to_uri'];
+  $root = url('', array('absolute' => TRUE));
+
+  if (parse_url($from, PHP_URL_HOST)  == parse_url($to, PHP_URL_HOST) &&
+      parse_url($from, PHP_URL_PATH)  == parse_url($to, PHP_URL_PATH) &&
+      parse_url($from, PHP_URL_QUERY) == parse_url($to, PHP_URL_QUERY)) {
+    form_set_error('to_uri', 'From URL cannot equal To URL.');
   }
-  if ($form_state['values']['from_uri'] == url('', array('https' => FALSE)) ||
-      $form_state['values']['from_uri'] == str_replace('http://', 'https://', url('', array('https' => FALSE)))) {
-    form_set_error('', t('From URL cannot be the root of the default site.'));
+  if (parse_url($from, PHP_URL_HOST)  == parse_url($root, PHP_URL_HOST) &&
+      parse_url($from, PHP_URL_PATH)  == parse_url($root, PHP_URL_PATH) &&
+      parse_url($from, PHP_URL_QUERY) == parse_url($root, PHP_URL_QUERY)) {
+    form_set_error('from_uri', 'From URL cannot be the root of the default site.');
   }
 }
 
