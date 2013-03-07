@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for the Git Sync module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function git_sync_schema() {
+  $schema = array();
+
+  $schema['git_sync'] = array(
+    'description' => 'Git syncronization routines.',
+    'export' => array(
+      'key' => 'name',
+      'identifier' => 'routine',
+      'default hook' => 'default_git_sync_routines',
+      'api' => array(
+        'owner' => 'git_sync',
+        'api' => 'git_sync',
+        'minimum_version' => 1,
+        'current_version' => 1,
+      ),
+    ),
+    'fields' => array(
+      'name' => array(
+        'description' => 'The name of the routine.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'options' => array(
+        'description' => 'Serialized storage of routine options.',
+        'type' => 'blob',
+        'serialize' => TRUE,
+      ),
+    ),
+    'primary key' => array('name'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function git_sync_uninstall() {
+  // Nothing to do.
+}

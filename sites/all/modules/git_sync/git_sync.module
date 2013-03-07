@@ -1,0 +1,134 @@
+<?php
+
+/**
+ * @file
+ * Facilitates the syncing of a source repository to a destination repository.
+ */
+
+require_once __DIR__ . '/git_sync.crud.inc';
+
+/**
+ * Implements hook_hook_info().
+ */
+function git_sync_hook_info() {
+  return array(
+    'git_synchronizers' => array(
+      'group' => 'git_sync',
+    ),
+  );
+}
+
+/**
+ * Implements hook_permission().
+ */
+function git_sync_permission() {
+  return array(
+    'administer git sync routines' => array(
+      'title' => t('Administer Git synchronization routines'),
+      'description' => t('Create, mange, and configure Git repository synchronization routines'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function git_sync_ctools_plugin_directory($module, $type) {
+  if ('export_ui' == $type) {
+    return 'plugins/export_ui';
+  }
+}
+
+/**
+ * Loads all Git synchronizers from hook_git_synchronizers() implementations.
+ *
+ * @return array
+ */
+function git_sync_synchronizers_load_all() {
+  $syncers = &drupal_static(__FUNCTION__);
+  if (!$syncers) {
+    $syncers = module_invoke_all('git_synchronizers');
+    drupal_alter('git_synchronizers', $syncers);
+  }
+  return $syncers;
+}
+
+/**
+ * Synchronizes two repositories.
+ *
+ * @param string $name
+ *   The machine name of the sync routine.
+ *
+ * @throws \RuntimeException
+ * @throws \UnexpectedValueException
+ * @throws \InvalidArgumentException
+ * @throws GitException
+ */
+function git_sync($name) {
+  if (!$routine = git_sync_load($name)) {
+    $message = t('Sync routine not found: @name', array('@name' => $name));
+    throw new \InvalidArgumentException($message);
+  }
+
+  $git = git_sync_working_copy($routine);
+  $type = $routine->options['type'];
+
+  $synchronizers = git_sync_synchronizers_load_all();
+  if (!isset($synchronizers[$type])) {
+    throw new \UnexpectedValueException(t('Type not valid: @type', array('@type' => $type)));
+  }
+
+  $function = $synchronizers[$type]['sync callback'];
+  if (!function_exists($function)) {
+    throw new \UnexpectedValueException(t('Function does not exist: @function', array('@function' => $function)));
+  }
+
+  $function($git, $routine, $synchronizers[$type]);
+}
+
+/**
+ * Returns a working copy for the appropriate repository.
+ *
+ * @param stdClass $routine
+ *   The synchronization routine configuration.
+ *
+ * @return GitWrapper
+ *
+ * @throws \RuntimeException
+ * @throws GitException
+ */
+function git_sync_working_copy($routine) {
+  $options = &$routine->options;
+
+  $wrapper = git_wrapper();
+  $wrapper->unsetPrivateKey();
+
+  if ($options['ssh']) {
+    $ssh_wrapper = git_wrapper_ssh_wrapper();
+    $wrapper->setPrivateKey($options['private_key'], $options['port'], $ssh_wrapper);
+  }
+
+  $dir = variable_get('git_sync_dir', 'public://git_sync');
+  git_sync_dir_init($dir);
+
+  if (!$realpath = drupal_realpath($dir)) {
+    throw new \RuntimeException(t('Error resolving directory: @dir', array('@dir' => $dir)));
+  }
+
+  return $wrapper->workingCopy($realpath . '/' . $routine->name);
+}
+
+/**
+ * Initialize the directory containing the working copies.
+ *
+ * @param string $dir
+ *   The base directory being initialized.
+ */
+function git_sync_dir_init($dir) {
+  if (!is_dir($dir)) {
+    if (!drupal_mkdir($dir)) {
+      throw new \RuntimeException(t('Error creating directory: @dir', array('@dir' => $dir)));
+    }
+    file_create_htaccess($dir, TRUE);
+  }
+}

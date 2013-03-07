@@ -1,0 +1,13 @@
+name = Git Sync
+description = Facilitates the syncing of a source repository to a destination repository.
+dependencies[] = ctools
+dependencies[] = git_wrapper
+package = Other
+core = 7.x
+
+; Information added by drupal.org packaging script on 2013-03-07
+version = "7.x-1.0-alpha2"
+core = "7.x"
+project = "git_sync"
+datestamp = "1362663685"
+
