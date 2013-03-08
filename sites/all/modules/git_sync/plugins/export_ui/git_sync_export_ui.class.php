@@ -22,6 +22,28 @@ class git_sync_export_ui extends ctools_export_ui {
     $form['bottom row']['#access'] = FALSE;
     return;
   }
+
+  /**
+   * Overrides ctools_export_ui::list_build_row().
+   *
+   * Removes the drop button in favor of a horizontal list.
+   */
+  function list_build_row($item, &$form_state, $operations) {
+    parent::list_build_row($item, $form_state, $operations);
+    foreach ($this->rows as $name => $row) {
+
+      // @todo Make a theme function.
+      $label = check_plain($item->options['label']);
+      $machine_name = '<small>' . t('(Machine name: @name)', array('@name' => $item->name)) . '</small>';
+      $this->rows[$name]['data'][0]['data'] = array('#markup' => $label . ' ' . $machine_name);
+
+      $this->rows[$name]['data'][2]['data'] = array(
+        '#theme' => 'links__node_operations',
+        '#links' => $operations,
+        '#attributes' => array('class' => array('links', 'inline')),
+      );
+    }
+  }
 }
 
 /**

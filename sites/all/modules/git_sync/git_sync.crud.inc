@@ -6,7 +6,7 @@
  */
 
 /**
- * Gets all search engine configurations.
+ * Gets all sync routine configurations.
  *
  * @return array
  *   An associative array keyed by the machine name of the routine to the
@@ -79,7 +79,7 @@ function git_sync_save($routine) {
   $sucess = ctools_export_crud_save('git_sync', $routine);
   $args = array('@name' => $routine->name);
   if ($sucess) {
-    drupal_static_reset('git_sync_load');
+    drupal_static_reset('git_sync_load_all');
     watchdog('git_sync', 'Git sync routine saved: @name', $args);
   }
   else {
@@ -99,7 +99,7 @@ function git_sync_save($routine) {
 function git_sync_delete($routine) {
   // @todo CTools doesn't return the status. Figure out how to get it.
   ctools_export_crud_delete('git_sync', $routine);
-  drupal_static_reset('git_sync_load');
+  drupal_static_reset('git_sync_load_all');
   $args = array('@name' => $routine->name);
   watchdog('git_sync', 'Git sync routine deleted: @name', $args);
   return TRUE;
