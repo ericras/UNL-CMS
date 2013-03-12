@@ -1,6 +1,0 @@
-{
-    "require": {
-        "cpliakas/git-wrapper": "1.0.0-RC1"
-    },
-    "minimum-stability": "RC"
-}

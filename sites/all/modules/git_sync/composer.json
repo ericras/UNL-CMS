@@ -1,6 +1,0 @@
-{
-    "require": {
-        "cpliakas/git-sync": "1.0.0-beta3"
-    },
-    "minimum-stability": "beta"
-}
