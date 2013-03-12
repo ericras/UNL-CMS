@@ -14,6 +14,20 @@ $plugin = array(
     'menu item' => 'git-sync',
     'menu title' => 'Git Sync',
     'menu description' => 'Configure Git repository synchronization routines.',
+    'items' => array(
+      'run' => array(
+        'path' => 'list/%ctools_export_ui/run',
+        'title' => 'Run',
+        'page callback' => 'ctools_export_ui_switcher_page',
+        //'page callback' => 'git_sync_run',
+        'page arguments' => array('git_sync_ctools_export_ui', 'run', 5),
+        'load arguments' => array('git_sync_ctools_export_ui'),
+        'file' => 'includes/export-ui.inc',
+        'file path' => drupal_get_path('module', 'ctools'),
+        'access arguments' => array('administer git sync routines'), //TODO add perm run from gui
+        'type' => MENU_CALLBACK,
+      ),
+    ),
   ),
 
   'title singular' => t('routine'),
@@ -29,5 +43,9 @@ $plugin = array(
   'handler' => array(
     'class' => 'git_sync_export_ui',
     'parent' => 'ctools_export_ui',
+  ),
+
+  'allowed operations' => array(
+    'run' => array('title' => t('Run'), 'ajax' => TRUE, 'token' => FALSE),
   ),
 );

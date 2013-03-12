@@ -44,6 +44,35 @@ class git_sync_export_ui extends ctools_export_ui {
       );
     }
   }
+
+  function list_header($form_state) {
+    if (isset($form_state['input']['test_result'])) {
+      return $form_state['input']['test_result'];
+    }
+  }
+
+
+  function run_page($js, $input, $item) {
+    //$input['test_result'] = '1';
+
+    watchdog('asdf2', $item->name . ' is going to run');
+    try {
+      git_sync($idftem->name);
+    }
+    catch (Exception $e) {
+      drupal_set_message(t('Git Sync failed, see log for more details.'), 'error');
+      watchdog_exception('git_sync', $e);
+    }
+    watchdog('asdf2', $item->name . ' has run');
+
+    if (!$js) {
+      drupal_goto(ctools_export_ui_plugin_base_path($this->plugin));
+    }
+    else {
+      return $this->list_page($js, $input);
+    }
+  }
+
 }
 
 /**
