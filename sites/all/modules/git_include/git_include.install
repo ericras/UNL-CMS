@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function git_include_schema() {
+  $schema = array();
+
+  $schema['git_include'] = array(
+    'description' => 'Git include repositories.',
+    'export' => array(
+      'key' => 'name',
+      'identifier' => 'routine',
+      'default hook' => 'default_git_include_routines',
+      'api' => array(
+        'owner' => 'git_include',
+        'api' => 'git_include',
+        'minimum_version' => 1,
+        'current_version' => 1,
+      ),
+    ),
+    'fields' => array(
+      'name' => array(
+        'description' => 'The name of the repository.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'options' => array(
+        'description' => 'Serialized storage of routine options.',
+        'type' => 'blob',
+        'serialize' => TRUE,
+      ),
+    ),
+    'primary key' => array('name'),
+  );
+
+  return $schema;
+}

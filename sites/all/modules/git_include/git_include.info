@@ -1,0 +1,6 @@
+name = Git Include
+description = Allows git repositories to be cloned into the site without file system access.
+dependencies[] = ctools
+core = 7.x
+package = Other
+config = admin/config/development/git-include

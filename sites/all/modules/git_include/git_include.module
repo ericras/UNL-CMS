@@ -1,0 +1,115 @@
+<?php
+
+
+require_once __DIR__ . '/git_include.crud.inc';
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function git_include_ctools_plugin_directory($module, $type) {
+  if ('export_ui' == $type) {
+    return 'plugins/export_ui';
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function git_include_menu() {
+  $items = array();
+
+  $items['admin/config/development/git-include'] = array(
+    'title' => 'Git include',
+    'description' => 'Configure Git include.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('git_include_form'),
+    'access arguments' => array('execute git include pull'),
+  );
+  $items['admin/config/development/git-include/list'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+
+  $items['admin/config/development/git-include/add'] = array(
+    'title' => 'Add new repo',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('git_include_create', 'add'),
+    'access arguments' => array('add new git include'),
+    'type' => MENU_LOCAL_ACTION,
+  );
+  $items['admin/config/development/git-include/settings'] = array(
+    'title' => 'Settings',
+    'description' => 'Administer Git include settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('git_include_admin_settings_form'),
+    'access arguments' => array('administer git include settings'),
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permisson().
+ */
+function git_include_permission() {
+  return array(
+    'add new git include' => array(
+      'title' => t('Clone new repositories'),
+    ),
+    'administer git include settings' => array(
+      'title' => t('Administer Git Include settings'),
+    ),
+    'execute git include pull' => array(
+      'title' => t('Run a Git Include pull'),
+    ),
+  );
+}
+
+/**
+ * Form: Create New Site.
+ */
+function git_include_create($form, &$form_state) {
+  $form['site_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('New site path'),
+    '#description' => t('Relative url for the new site.'),
+    '#default_value' => 'newsite',
+    '#required' => TRUE,
+  );
+  $form['clean_url'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use clean URLs'),
+    '#description' => t("Unless you have some reason to think your site won't support this, leave it checked."),
+    '#default_value' => 1,
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Create site'),
+  );
+  return $form;
+}
+
+/**
+ * Menu callback for list/configuring repos.
+ */
+function git_include_form() {
+
+}
+
+/**
+ * Menu callback for admin settings.
+ */
+function git_include_admin_settings_form() {
+  $form = array();
+
+  $form['git_include_directory'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Directory'),
+    '#default_value' => variable_get('git_include_directory', 'public://git_include'),
+    '#required' => TRUE,
+    '#description' => t('The location repositories will be cloned into.'),
+  );
+
+  return system_settings_form($form);
+}
