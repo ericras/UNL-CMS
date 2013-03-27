@@ -94,7 +94,7 @@ function git_include_routine_form(&$form, &$form_state) {
     '#title' => t('Name'),
     '#type' => 'textfield',
     '#default_value' => $routine->options['label'],
-    '#description' => t('The human-readable name of the synchronization routine.'),
+    '#description' => t('The human-readable name of the repo.'),
     '#required' => TRUE,
     '#maxlength' => 255,
     '#size' => 30,
@@ -119,47 +119,6 @@ function git_include_routine_form(&$form, &$form_state) {
     '#description' => t('The Git URL of the source repository being synchronized.'),
     '#required' => TRUE,
   );
-
-  $form['dest_repo'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Destination repository URL'),
-    '#default_value' => $routine->options['dest_repo'],
-    '#description' => t('The Git URL of the destination repository being synchronized to.'),
-    '#required' => TRUE,
-  );
-
-  $form['ssh'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Connect to repositories via SSH'),
-    '#default_value' => $routine->options['ssh'],
-  );
-
-  $form['private_key'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Path to private key'),
-    '#default_value' => $routine->options['private_key'],
-    '#description' => t('Optionally specify a path to a private key used to authenticate against the server hosting the repositories.'),
-    '#size' => 90,
-    '#states' => array(
-      'visible' => array(
-        ':input[name="ssh"]' => array('checked' => TRUE),
-      ),
-    ),
-  );
-
-  $form['port'] = array(
-    '#type' => 'textfield',
-    '#title' => t('SSH Port'),
-    '#default_value' => $routine->options['port'],
-    '#description' => t('The port that the SSH server hosting the source repository listens on.'),
-    '#size' => 6,
-    '#states' => array(
-      'visible' => array(
-        ':input[name="ssh"]' => array('checked' => TRUE),
-      ),
-    ),
-  );
-
 }
 
 /**

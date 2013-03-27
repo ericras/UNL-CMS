@@ -18,25 +18,25 @@ function git_include_ctools_plugin_directory($module, $type) {
 function git_include_menu() {
   $items = array();
 
-  $items['admin/config/development/git-include'] = array(
+/*  $items['admin/config/development/git-include'] = array(
     'title' => 'Git include',
     'description' => 'Configure Git include.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('git_include_form'),
     'access arguments' => array('execute git include pull'),
-  );
-  $items['admin/config/development/git-include/list'] = array(
+  );*/
+/*  $items['admin/config/development/git-include/list'] = array(
     'title' => 'List',
     'type' => MENU_DEFAULT_LOCAL_TASK,
-  );
+  );*/
 
-  $items['admin/config/development/git-include/add'] = array(
+/*$items['admin/config/development/git-include/add'] = array(
     'title' => 'Add new repo',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('git_include_create', 'add'),
     'access arguments' => array('add new git include'),
     'type' => MENU_LOCAL_ACTION,
-  );
+  );*/
   $items['admin/config/development/git-include/settings'] = array(
     'title' => 'Settings',
     'description' => 'Administer Git include settings.',
@@ -55,20 +55,20 @@ function git_include_menu() {
 function git_include_permission() {
   return array(
     'add new git include' => array(
-      'title' => t('Clone new repositories'),
+      'title' => t('Add and clone new repositories'),
     ),
     'administer git include settings' => array(
       'title' => t('Administer Git Include settings'),
     ),
     'execute git include pull' => array(
-      'title' => t('Run a Git Include pull'),
+      'title' => t('Run a repository pull'),
     ),
   );
 }
 
 /**
  * Form: Create New Site.
- */
+ *//*
 function git_include_create($form, &$form_state) {
   $form['site_path'] = array(
     '#type' => 'textfield',
@@ -92,10 +92,10 @@ function git_include_create($form, &$form_state) {
 
 /**
  * Menu callback for list/configuring repos.
- */
+ *//*
 function git_include_form() {
 
-}
+} */
 
 /**
  * Menu callback for admin settings.

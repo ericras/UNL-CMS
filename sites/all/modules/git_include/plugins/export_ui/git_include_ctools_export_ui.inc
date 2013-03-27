@@ -10,7 +10,7 @@ $plugin = array(
   'access' => 'add new git include',
 
   'menu' => array(
-    'menu prefix' => 'admin/config/system',
+    'menu prefix' => 'admin/config/development',
     'menu item' => 'git-include',
     'menu title' => 'Git include (ctools)',
     'menu description' => 'Configure Git repository clone/pull routines.',
@@ -30,10 +30,10 @@ $plugin = array(
     ),
   ),
 
-  'title singular' => t('routine'),
-  'title plural' => t('routines'),
-  'title singular proper' => t('Git include routine'),
-  'title plural proper' => t('Git include routines'),
+  'title singular' => t('repository'),
+  'title plural' => t('repositories'),
+  'title singular proper' => t('Git include repository'),
+  'title plural proper' => t('Git include repositories'),
 
   'form' => array(
     'settings' => 'git_include_routine_form',
