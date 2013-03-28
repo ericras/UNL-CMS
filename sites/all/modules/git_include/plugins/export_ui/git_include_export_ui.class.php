@@ -30,19 +30,16 @@ class git_include_export_ui extends ctools_export_ui {
    */
   function list_build_row($item, &$form_state, $operations) {
     parent::list_build_row($item, $form_state, $operations);
-    foreach ($this->rows as $name => $row) {
-
       // @todo Make a theme function.
       $label = check_plain($item->options['label']);
       $machine_name = '<small>' . t('(Machine name: @name)', array('@name' => $item->name)) . '</small>';
-      $this->rows[$name]['data'][0]['data'] = array('#markup' => $label . ' ' . $machine_name);
+      $this->rows[$item->name]['data'][0]['data'] = array('#markup' => $label . ' ' . $machine_name);
 
-      $this->rows[$name]['data'][2]['data'] = array(
+      $this->rows[$item->name]['data'][2]['data'] = array(
         '#theme' => 'links__node_operations',
         '#links' => $operations,
         '#attributes' => array('class' => array('links', 'inline')),
       );
-    }
   }
 
   function list_header($form_state) {
