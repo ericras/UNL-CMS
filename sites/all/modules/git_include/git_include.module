@@ -106,10 +106,49 @@ function git_include_admin_settings_form() {
   $form['git_include_directory'] = array(
     '#type' => 'textfield',
     '#title' => t('Directory'),
-    '#default_value' => variable_get('git_include_directory', 'public://git_include'),
+    '#default_value' => variable_get('git_include_dir', 'public://git_include'),
     '#required' => TRUE,
     '#description' => t('The location repositories will be cloned into.'),
   );
 
   return system_settings_form($form);
+}
+
+/**
+ * Synchronizes two repositories.
+ *
+ * @param string $name
+ *   The machine name of the sync routine.
+ *
+ * @throws \RuntimeException
+ * @throws \UnexpectedValueException
+ * @throws \InvalidArgumentException
+ * @throws GitException
+ */
+function git_include($name) {
+  if (!$routine = git_include_load($name)) {
+    $message = t('Git include repository not found: @name', array('@name' => $name));
+    throw new Exception($message);
+  }
+
+  $dir = variable_get('git_include_dir', 'public://git_include');
+  git_sync_dir_init($dir);
+
+
+
+}
+
+/**
+ * Initialize the directory containing the working copies.
+ *
+ * @param string $dir
+ *   The base directory being initialized.
+ */
+function git_sync_dir_init($dir) {
+  if (!is_dir($dir)) {
+    if (!drupal_mkdir($dir)) {
+      throw new \RuntimeException(t('Error creating directory: @dir', array('@dir' => $dir)));
+    }
+    file_create_htaccess($dir, TRUE);
+  }
 }

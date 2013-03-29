@@ -12,7 +12,7 @@
  *   An associative array keyed by the machine name of the routine to the
  *   configuration object.
  */
-function git_include_routine_load_all() {
+function git_include_load_all() {
   $routines = &drupal_static(__FUNCTION__);
   if (NULL === $routines) {
     ctools_include('export');
@@ -32,19 +32,13 @@ function git_include_new() {
   $routine->options = array(
     'label' => '',
     'source_repo' => '',
-    'dest_repo' => '',
-    'type' => 'mirror',
-    'ssh' => variable_get('git_wrapper_connect_via_ssh', 0),
-    'private_key' => variable_get('git_wrapper_private_key', ''),
-    'port' => variable_get('git_wrapper_ssh_port', 22),
   );
-
-
   return $routine;
 }
 
 /**
  * Loads a Git include routine configuration settings.
+ * Used to check if machine name exists when creating new entry.
  *
  * @param string $name
  *   The machine name of the routine.
@@ -68,7 +62,7 @@ function git_include_load($name) {
  *   The Git include routine configuration being saved.
  *
  * @return boolean
- */
+ */ /*
 function git_include_save($routine) {
   $sucess = ctools_export_crud_save('git_include', $routine);
   $args = array('@name' => $routine->name);
@@ -80,7 +74,7 @@ function git_include_save($routine) {
     watchdog('git_include', 'Error saving Git include routine: @name', $args, WATCHDOG_ERROR);
   }
   return $sucess;
-}
+} */
 
 /**
  * Deletes a Git include routine's configuration settings.
@@ -89,7 +83,7 @@ function git_include_save($routine) {
  *   The Git include routine configuration being deleted.
  *
  * @return boolean
- */
+ */ /*
 function git_include_delete($routine) {
   // @todo CTools doesn't return the status. Figure out how to get it.
   ctools_export_crud_delete('git_include', $routine);
@@ -98,3 +92,4 @@ function git_include_delete($routine) {
   watchdog('git_include', 'Git include routine deleted: @name', $args);
   return TRUE;
 }
+*/

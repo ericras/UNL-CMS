@@ -42,25 +42,71 @@ class git_include_export_ui extends ctools_export_ui {
       );
   }
 
+  /**
+   * Overrides ctools_export_ui::list_header()
+   *
+   * Render a header to go before the list.
+   *
+   * This will appear after the filter/sort widgets.
+   */
   function list_header($form_state) {
     if (isset($form_state['input']['test_result'])) {
       return $form_state['input']['test_result'];
     }
   }
 
+  /**
+   * Overrides ctools_export_ui::edit_save_form()
+   *
+   * Called to save the final product from the edit form.
+   */
+  function edit_save_form($form_state) {
+    $item = &$form_state['item'];
+    $export_key = $this->plugin['export']['key'];
 
+    $result = ctools_export_crud_save($this->plugin['schema'], $item);
+
+    if ($result) {
+      drupal_static_reset('git_include_load');
+      drupal_static_reset('git_include_load_all');
+      $message = str_replace('%title', check_plain($item->{$export_key}), $this->plugin['strings']['confirmation'][$form_state['op']]['success']);
+      drupal_set_message($message);
+    }
+    else {
+      $message = str_replace('%title', check_plain($item->{$export_key}), $this->plugin['strings']['confirmation'][$form_state['op']]['fail']);
+      drupal_set_message($message, 'error');
+    }
+  }
+
+  /**
+   * Overrides ctools_export_ui::delete_form_submit()
+   *
+   * Deletes exportable items from the database.
+   */
+  function delete_form_submit(&$form_state) {
+    $item = $form_state['item'];
+    ctools_export_crud_delete($this->plugin['schema'], $item);
+    drupal_static_reset('git_include_load');
+    drupal_static_reset('git_include_load_all');
+    $export_key = $this->plugin['export']['key'];
+    $message = str_replace('%title', check_plain($item->{$export_key}), $this->plugin['strings']['confirmation'][$form_state['op']]['success']);
+    drupal_set_message($message);
+  }
+
+  /**
+   * Main entry point to perform git clone/pull command for an item.
+   */
   function run_page($js, $input, $item) {
-    //$input['test_result'] = '1';
-
-    watchdog('asdf2', $item->name . ' is going to run');
+    watchdog('git_include', $item->name . ' is going to run');
     try {
-      git_include($idftem->name);
+      $result = git_include($item->name);
+      $input['test_result'] = $result;
     }
     catch (Exception $e) {
       drupal_set_message(t('Git include failed, see log for more details.'), 'error');
       watchdog_exception('git_include', $e);
     }
-    watchdog('asdf2', $item->name . ' has run');
+    watchdog('git_include', $item->name . ' has run');
 
     if (!$js) {
       drupal_goto(ctools_export_ui_plugin_base_path($this->plugin));
@@ -69,7 +115,6 @@ class git_include_export_ui extends ctools_export_ui {
       return $this->list_page($js, $input);
     }
   }
-
 }
 
 /**
