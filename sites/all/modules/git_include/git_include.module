@@ -126,16 +126,35 @@ function git_include_admin_settings_form() {
  * @throws GitException
  */
 function git_include($name) {
-  if (!$routine = git_include_load($name)) {
-    $message = t('Git include repository not found: @name', array('@name' => $name));
-    throw new Exception($message);
+  if (!$repo = git_include_load($name)) {
+    throw new Exception(t('Git include repository not found: @name', array('@name' => $name)));
   }
 
   $dir = variable_get('git_include_dir', 'public://git_include');
-  git_sync_dir_init($dir);
+  git_include_dir_init($dir);
 
+  if (!$realpath = drupal_realpath($dir)) {
+    throw new Exception(t('Error resolving directory: @dir', array('@dir' => $dir)));
+  }
 
+  $command = 'git clone ' . $repo->options['source_repo'] . ' ' . $realpath . '/' . $repo->name;
+  //$result = exec($command, $output, $return_var);
 
+  ob_start();
+  passthru($command, $return_var);
+  $result = ob_get_contents();
+  ob_end_clean();
+
+  drupal_set_message($result, 'git_include');
+
+  if ($return_var !== 0) {
+    throw new Exception(t('Shell command returned with status @status: @command', array('@command' => $command, '@status' => $return_var)));
+  }
+  else {
+    drupal_set_message('Success!', 'status');
+  }
+
+  return $result;
 }
 
 /**
@@ -144,10 +163,10 @@ function git_include($name) {
  * @param string $dir
  *   The base directory being initialized.
  */
-function git_sync_dir_init($dir) {
+function git_include_dir_init($dir) {
   if (!is_dir($dir)) {
     if (!drupal_mkdir($dir)) {
-      throw new \RuntimeException(t('Error creating directory: @dir', array('@dir' => $dir)));
+      throw new Exception(t('Error creating directory: @dir', array('@dir' => $dir)));
     }
     file_create_htaccess($dir, TRUE);
   }

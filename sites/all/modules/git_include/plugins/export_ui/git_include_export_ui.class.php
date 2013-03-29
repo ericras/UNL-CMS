@@ -97,16 +97,17 @@ class git_include_export_ui extends ctools_export_ui {
    * Main entry point to perform git clone/pull command for an item.
    */
   function run_page($js, $input, $item) {
-    watchdog('git_include', $item->name . ' is going to run');
+    watchdog('git_include', 'Running ' . $item->name);
     try {
-      $result = git_include($item->name);
-      $input['test_result'] = $result;
+      git_include($item->name);
+      $input['test_result'] = theme_status_messages(array('display' => NULL));
     }
     catch (Exception $e) {
-      drupal_set_message(t('Git include failed, see log for more details.'), 'error');
+      drupal_set_message($e->getMessage(), 'error');
       watchdog_exception('git_include', $e);
+      $input['test_result'] = theme_status_messages(array('display' => NULL));
     }
-    watchdog('git_include', $item->name . ' has run');
+    watchdog('git_include', 'Finished running ' . $item->name);
 
     if (!$js) {
       drupal_goto(ctools_export_ui_plugin_base_path($this->plugin));
