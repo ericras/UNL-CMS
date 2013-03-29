@@ -1,0 +1,9 @@
+name = UNL TWIG
+description = Adds support for creating TWIG templates.
+package = UNL
+core = 7.x
+version = "7.x-1.x"
+configure = admin/config/system/unl_twig
+
+files[] = unl_twig.install
+files[] = unl_twig.module

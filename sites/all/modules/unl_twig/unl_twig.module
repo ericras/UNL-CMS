@@ -1,0 +1,82 @@
+<?php
+
+function unl_twig_init() {
+  // We need to register our stuff after everything else, this is a bit of a hack to do so.
+  theme_get_registry();
+  $theme_registry_object = theme_get_registry(FALSE);
+  $theme_registry_array  = &drupal_static('theme_get_registry')[1];
+
+  foreach (variable_get('unl_twig_templates', array()) as $name => $template) {
+    $theme_registry_object[$name] =
+    $theme_registry_array[$name]  = array(
+      'function' => 'unl_twig_render',
+      'variables' => array('template' => $name),
+    );
+  }
+}
+
+function unl_twig_render($variables) {
+  require_once(DRUPAL_ROOT . '/vendor/Twig/lib/Twig/Autoloader.php');
+  Twig_Autoloader::register();
+  require_once __DIR__ . '/unl_twig_extension.php';
+
+  $templates = variable_get('unl_twig_templates', array());
+  $template = '';
+  foreach ($variables['theme_hook_suggestions'] as $hook) {
+    if (array_key_exists($hook, $templates)) {
+      $template = $templates[$hook];
+      break;
+    }
+  }
+
+  if (!$template) {
+    return;
+  }
+
+  $loader = new Twig_Loader_String();
+  $twig = new Twig_Environment($loader);
+  $twig->addExtension(new Unl_Twig_Extension());
+  return $twig->render($template, $variables);
+}
+
+function unl_twig_menu() {
+  $items = array();
+
+  // UNL TWIG Settings
+  $items['admin/structure/unl_twig'] = array(
+    'title' => 'UNL TWIG Templates',
+    'description' => 'Manage twig templates',
+    'access callback' => TRUE,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('unl_twig_list'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'unl_twig.admin.php',
+  );
+
+  $items['admin/structure/unl_twig/create'] = array(
+    'title' => 'Create Template',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('unl_twig_edit', '_new_'),
+    'access callback' => TRUE,
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'unl_twig.admin.php',
+  );
+
+  $items['admin/structure/unl_twig/%/edit'] = array(
+    'title' => 'Create Template',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('unl_twig_edit', 3),
+    'access callback' => TRUE,
+    'file' => 'unl_twig.admin.php',
+  );
+
+  $items['admin/structure/unl_twig/%/delete'] = array(
+    'title' => 'Create Template',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('unl_twig_delete', 3),
+    'access callback' => TRUE,
+    'file' => 'unl_twig.admin.php',
+  );
+
+  return $items;
+}
