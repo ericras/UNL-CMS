@@ -127,7 +127,7 @@ function git_include_admin_settings_form() {
  */
 function git_include($name) {
   if (!$repo = git_include_load($name)) {
-    throw new Exception(t('Git include repository not found: @name', array('@name' => $name)));
+    throw new Exception(t('Repository info not found: @name', array('@name' => $name)));
   }
 
   $dir = variable_get('git_include_dir', 'public://git_include');
@@ -137,8 +137,19 @@ function git_include($name) {
     throw new Exception(t('Error resolving directory: @dir', array('@dir' => $dir)));
   }
 
-  $command = 'git clone ' . $repo->options['source_repo'] . ' ' . $realpath . '/' . $repo->name;
-  //$result = exec($command, $output, $return_var);
+  $command = 'cd ' . $realpath . '/' . $repo->name . '; git rev-parse --show-toplevel;';
+  $git_path = exec($command, $output, $return_var);
+
+  $repopath = $realpath . '/' . $repo->name;
+
+  if (strtolower($git_path) !== strtolower($repopath)) {
+    $operation = 'clone';
+    $command = 'git clone ' . $repo->options['source_repo'] . ' ' . $repopath;
+  }
+  else {
+    $operation = 'pull';
+    $command = 'cd ' . $repopath . '; git pull;';
+  }
 
   ob_start();
   passthru($command, $return_var);
@@ -147,11 +158,11 @@ function git_include($name) {
 
   drupal_set_message($result, 'git_include');
 
-  if ($return_var !== 0) {
+  if (!is_int($return_var) || $return_var !== 0) {
     throw new Exception(t('Shell command returned with status @status: @command', array('@command' => $command, '@status' => $return_var)));
   }
   else {
-    drupal_set_message('Success!', 'status');
+    drupal_set_message(t('Git @op completed for @repo', array('@op' => $operation, '@repo' => $repo->options['label'])), 'status');
   }
 
   return $result;

@@ -98,6 +98,7 @@ class git_include_export_ui extends ctools_export_ui {
    */
   function run_page($js, $input, $item) {
     watchdog('git_include', 'Running ' . $item->name);
+
     try {
       git_include($item->name);
       $input['test_result'] = theme_status_messages(array('display' => NULL));
@@ -107,6 +108,7 @@ class git_include_export_ui extends ctools_export_ui {
       watchdog_exception('git_include', $e);
       $input['test_result'] = theme_status_messages(array('display' => NULL));
     }
+
     watchdog('git_include', 'Finished running ' . $item->name);
 
     if (!$js) {
