@@ -1,0 +1,18 @@
+base theme = unl_wdn
+
+name = UNL OG
+description = Subtheme of Organic Groups modifications for the base UNL theme.
+screenshot = screenshot.png
+core = 7.x
+engine = phptemplate
+
+; File name must not be 'style.css' to inherit from unl_wdn (even if in subdir)
+stylesheets[all][] = css/styles.css
+
+; Must copy unl regions over, they do not inherit
+regions[content] = Main Content
+regions[navlinks] = Navigation Links
+regions[leftcollinks] = Related Links
+regions[contactinfo] = Contact Us
+regions[optionalfooter] = Optional Footer
+regions[footercontent] = Footer Content
