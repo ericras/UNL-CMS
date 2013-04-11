@@ -1,0 +1,9 @@
+name = "UNL D7 to D7 migration"
+description = "Migrate content from one site to another"
+package = "Development"
+core = 7.x
+
+dependencies[] = migrate
+dependencies[] = migrate_d2d
+
+files[] = unl_migrate_d2d.module

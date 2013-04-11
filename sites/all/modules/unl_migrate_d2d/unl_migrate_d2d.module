@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * Implements hook_flush_caches().
+ */
+function unl_migrate_d2d_flush_caches() {
+  Database::addConnectionInfo('for_migration', 'default', array());
+
+  $common_arguments = array(
+    'source_version' => 7,
+ // 'group_name' => 'example',
+    'source_connection' => 'for_migration',
+    'source_database' => array(
+      'database' => $GLOBALS['databases']['default']['default']['database'],
+      'username' => $GLOBALS['databases']['default']['default']['username'],
+      'password' => $GLOBALS['databases']['default']['default']['password'],
+      'host' => $GLOBALS['databases']['default']['default']['host'],
+      'port' => $GLOBALS['databases']['default']['default']['port'],
+      'driver' => $GLOBALS['databases']['default']['default']['driver'],
+      'prefix' => 's2_drupal_',
+    ),
+  );
+
+  $arguments = $common_arguments + array(
+    'description' => t('Migration of users from source site'),
+    'machine_name' => 'User',
+  );
+
+  Migration::registerMigration('DrupalUser7Migration', $arguments['machine_name'],
+                               $arguments);
+}
+
+/**
+ * Implements hook_migrate_api().
+ */
+function unl_migrate_d2d_migrate_api() {
+  $api = array(
+    'api' => 2,
+  );
+  return $api;
+}
