@@ -90,7 +90,10 @@ abstract class DrupalMigration extends DynamicMigration {
    * @param array $arguments
    */
   public function __construct($arguments) {
-    $group = MigrateGroup::getInstance($arguments['group_name']);
+    if (empty($arguments['group'])) {
+      $arguments['group'] = 'default';
+    }
+    $group = MigrateGroup::getInstance($arguments['group']);
     $group_arguments = $group->getArguments();
     $this->arguments = $group_arguments + $arguments;
     $this->sourceVersion = $this->arguments['source_version'];
@@ -102,16 +105,16 @@ abstract class DrupalMigration extends DynamicMigration {
     }
     $this->version = new $version_class($this->arguments);
     if (!isset($this->arguments['group'])) {
-      $this->arguments['group'] = MigrateGroup::getInstance($this->arguments['group_name']);
+      $this->arguments['group'] = MigrateGroup::getInstance($this->arguments['group']);
     }
     elseif (!is_object($this->arguments['group'])) {
       $this->arguments['group'] = MigrateGroup::getInstance($this->arguments['group']);
     }
     parent::__construct($this->arguments['group']);
     $this->sourceConnection = $this->arguments['source_connection'];
-    if (!empty($group_arguments['source_database'])) {
+    if (!empty($this->arguments['source_database'])) {
       Database::addConnectionInfo($this->sourceConnection, 'default',
-                                  $group_arguments['source_database']);
+                                  $this->arguments['source_database']);
     }
     if (!empty($this->arguments['source_type'])) {
       $this->sourceType = $this->arguments['source_type'];

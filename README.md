@@ -123,6 +123,10 @@ In this example the web root is /Library/WebServer/Documents and Apache runs as 
 
      - Convert FILE_ENTITY_DEFAULT_ALLOWED_EXTENSIONS to the new variable. See http://drupal.org/node/1846674#comment-6760286
 
+  *  migrate_d2d/migrate_d2d.migrate.inc
+
+     - Module in development, some vars fixed in DrupalMigration::_construct(). See http://drupal.org/node/1826132#comment-7288336
+
   *  og_menu
 
      - Applied og_menu-jquery_selector.patch. See:http://drupal.org/node/1051542
