@@ -17,17 +17,59 @@ function unl_migrate_d2d_flush_caches() {
       'host' => $GLOBALS['databases']['default']['default']['host'],
       'port' => $GLOBALS['databases']['default']['default']['port'],
       'driver' => $GLOBALS['databases']['default']['default']['driver'],
-      'prefix' => 's2_drupal_',
+      'prefix' => array(
+        'default' => 's2_drupal_',
+        'filter' => 'drupal_',
+        'filter_format' => 'drupal_',
+        'role' => 'drupal_',
+        'role_permission' => 'drupal_',
+        'unl_cas_settings' => 'drupal_',
+        'wysiwyg' => 'drupal_',
+      ),
     ),
   );
 
-  $arguments = $common_arguments + array(
-    'description' => t('Migration of users from source site'),
-    'machine_name' => 'User',
-  );
 
-  Migration::registerMigration('DrupalUser7Migration', $arguments['machine_name'],
-                               $arguments);
+  $role_arguments = $common_arguments + array(
+    'machine_name' => 'Role',
+    'description' => t('Roles do not actually need importing but users_roles do so we need this for the User dependency'),
+    'role_mappings' => array(
+      'Site admin' => 'Site admin',
+      'Content admin' => 'Content admin',
+      'Content editor' => 'Content editor',
+    ),
+  );
+  Migration::registerMigration('DrupalRole7Migration', $role_arguments['machine_name'], $role_arguments);
+
+  $user_arguments = $common_arguments + array(
+    'machine_name' => 'User',
+    'description' => t('Migration of users from source site'),
+    'role_migration' => 'Role',
+  );
+  Migration::registerMigration('DrupalUser7Migration', $user_arguments['machine_name'], $user_arguments);
+
+
+  // Node migrations - each has its own class derived from the migrate_d2d class,
+  // specifying its particular field mappings and transformations. source_type
+  // and destination_type are required arguments.
+  $node_arguments = array(
+    array(
+      'class_name' => 'BasicPageMigration',
+      'description' => t('Migration of basic page nodes'),
+      'machine_name' => 'BasicPage',
+      'source_type' => 'page',
+      'destination_type' => 'page',
+    ),
+  );
+  // Tell the node migrations where the users are coming from, so they can
+  // set up the dependency.
+  $common_node_arguments = $common_arguments + array(
+    'user_migration' => 'User',
+  );
+  foreach ($node_arguments as $arguments) {
+    $arguments = array_merge_recursive($arguments, $common_node_arguments);
+    Migration::registerMigration($arguments['class_name'], $arguments['machine_name'], $arguments);
+  }
 }
 
 /**

@@ -6,4 +6,4 @@ core = 7.x
 dependencies[] = migrate
 dependencies[] = migrate_d2d
 
-files[] = unl_migrate_d2d.module
+files[] = node.inc
