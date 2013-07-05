@@ -97,6 +97,10 @@ In this example the web root is /Library/WebServer/Documents and Apache runs as 
 
      - Add nl2br() on Plain Text processor. See http://drupal.org/node/1152216#comment-7174876
 
+  * modules/image/image.field.inc
+
+     - Allow additional Image Field extensions. See https://drupal.org/node/1014816#comment-6513292
+
 ## Hacks of Contrib modules:
 
   *  drush/commands/core/drupal/site_install.inc
@@ -120,7 +124,7 @@ In this example the web root is /Library/WebServer/Documents and Apache runs as 
      - Convert FILE_ENTITY_DEFAULT_ALLOWED_EXTENSIONS to the new variable. See http://drupal.org/node/1846674#comment-6760286
 
   *  og_menu
-	
+
      - Applied og_menu-jquery_selector.patch. See:http://drupal.org/node/1051542
 
   *  redirect
