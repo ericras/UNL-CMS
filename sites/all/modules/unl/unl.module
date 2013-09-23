@@ -566,10 +566,63 @@ function unl_form_system_logging_settings_alter(&$form, $form_state, $form_id) {
   }
 }
 
+
+function unl_codemirror_attach_js($form) {
+
+
+  drupal_add_js(base_path() . 'sites/all/libraries/codemirror/lib/codemirror.js');
+  drupal_add_css(drupal_get_path('module', 'unl') . '/../../../../sites/all/libraries/codemirror/lib/codemirror.css');
+
+  drupal_add_js(base_path() . 'sites/all/libraries/codemirror/mode/xml/xml.js');
+  drupal_add_js(base_path() . 'sites/all/libraries/codemirror/mode/css/css.js');
+  drupal_add_js(base_path() . 'sites/all/libraries/codemirror/mode/javascript/javascript.js');
+  drupal_add_js(base_path() . 'sites/all/libraries/codemirror/mode/htmlmixed/htmlmixed.js');
+
+
+
+  drupal_add_css(drupal_get_path('module', 'unl') . '/../../../../sites/all/libraries/codemirror/theme/default.css');
+
+  drupal_add_css(drupal_get_path('theme', 'unl_wdn') . '/codemirror/unl.css');
+
+  drupal_add_js(drupal_get_path('module', 'unl') . '/unl_codemirror.js');
+
+  drupal_add_library('system', 'ui.resizable');
+
+  return $form;
+}
+
 /**
  * Implements hook_form_alter().
  */
 function unl_form_alter(&$form, $form_state, $form_id) {
+	if (isset($form['#node_edit_form']) && $form['#node_edit_form']
+		|| isset($form['module']) && $form['module']['#value'] == 'block') {
+			$formIdent = '';
+			if (isset($form['#node_edit_form']) && $form['#node_edit_form']) {
+				$formIdent = 'node_' . $form['nid']['#value'];
+			} else {
+				$formIdent = 'block_' . $form['delta']['#value'];
+			}
+
+			// Add JavaScript to the form if the ace editor library is installed.
+			if (file_exists('sites/all/libraries/codemirror/lib/codemirror.js')) {
+				$form['ace_editor_identifier'] = array(
+					'#type' => 'hidden',
+					'#value' => $formIdent,
+				);
+				$form['#after_build'] = array('unl_codemirror_attach_js');
+			} else {
+				global $base_path;
+				drupal_set_message(
+					t(
+						'The Ace Editor JS library is missing, please check the !readme_link for installation instructions.',
+						array('!readme_link' => '<a href="' . $base_path . drupal_get_path('module', 'ace_editor') . '/README.txt" target="_blank">README</a>')
+					), 'error'
+				);
+			}
+	}
+
+
   // Make new menu items expanded by default.
   if ($form_id == 'menu_edit_item' && $form['mlid']['#value'] == 0) {
     $form['expanded']['#default_value'] = TRUE;
