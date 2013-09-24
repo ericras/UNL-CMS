@@ -8,7 +8,7 @@
 		* show it, else show the default textarea.
 		*/
 		function acifyWrapper($textFormatWrapper) {
-			//console.log("Acify");
+
 			// The select list for chosing the text format that will be used.
 			var $filterSelector = $textFormatWrapper.find('select.filter-list');
 
@@ -18,23 +18,21 @@
 
 
 
+
 				// Iterate through all textarea containers that and attach the editor.
 				$('div.form-item.form-type-textarea:visible', $textFormatWrapper).each(function(i) {
-					var $form_item = $(this);
-					var editor_instance;
 
 
 					// Initialize the editor and set the correct options.
-					editor_instance = CodeMirror.fromTextArea($form_item.find('textarea').get(0), {
+					var editor_instance = CodeMirror.fromTextArea($(this).find('textarea').get(0), {
 						lineNumbers: true,
 			            mode: 'htmlmixed',
 			            tabMode: 'shift'
 			        });
-					$form_item.data('editor_instance', editor_instance);
+					$(this).data('editor_instance', editor_instance);
 
 
 				});
-
 
 			} else { // Show the textarea.
 
@@ -48,17 +46,26 @@
 		}
 
 		/**
-		* Bind the change event to all text format select lists.
-		*/
-		$('div.text-format-wrapper fieldset.filter-wrapper select.filter-list').live('change', function(e) {
+		 * Bind the change event to all text format select lists.
+		 */
+		$('div.text-format-wrapper fieldset.filter-wrapper select.filter-list')
+			// Executes before the Drupal.behaviors.attachWysiwyg .change()
+			.change(function(e) {
+				var $textFormatWrapper = $(this).parents('div.text-format-wrapper:first');
+				acifyWrapper($textFormatWrapper);
+			})
+			// Executes after the Drupal.behaviors.attachWysiwyg .change()
+			.live('change', function(e) {
+				var $textFormatWrapper = $(this).parents('div.text-format-wrapper:first');
+				var $filterSelector = $textFormatWrapper.find('select.filter-list');
 
-			var $textFormatWrapper = $(this).parents('div.text-format-wrapper:first');
-//			$('textarea', $textFormatWrapper).hide();
-//			$textFormatWrapper.find('.mceEditor').show();
-			acifyWrapper($textFormatWrapper);
-		});
+				if ($filterSelector.val() == 'html') {
+					$('textarea', $textFormatWrapper).hide();
 
-
+					$('.grippie', $textFormatWrapper).hide();
+				}
+			}
+		);
 
 	}
   };
