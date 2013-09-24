@@ -20,6 +20,12 @@ Drupal.behaviors.unl_codemirror = {
             tabMode: 'shift'
           });
           $(this).data('editor_instance', editor_instance);
+
+          // Use jQueryUI for resizability.
+          $('.CodeMirror', $(this)).resizable();
+
+          // Mainly used to hide .grippie, which is added after our change events have executed.
+          $(this).addClass('codemirror-enabled');
         });
       }
       else {
@@ -28,6 +34,7 @@ Drupal.behaviors.unl_codemirror = {
             // Revert codemirror.
             $(this).data('editor_instance').toTextArea();
           }
+          $(this).removeClass('codemirror-enabled');
         });
       }
     }
@@ -47,7 +54,7 @@ Drupal.behaviors.unl_codemirror = {
         var $filterSelector = $textFormatWrapper.find('select.filter-list');
 
         if ($filterSelector.val() == 'html') {
-          $('textarea', $textFormatWrapper).hide();
+          $('.form-textarea', $textFormatWrapper).hide();
           $('.grippie', $textFormatWrapper).hide();
         }
       })

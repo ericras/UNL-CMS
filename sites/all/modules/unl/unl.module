@@ -580,16 +580,27 @@ function unl_codemirror_attach_js_css($form) {
 
   drupal_add_css('sites/all/libraries/codemirror/theme/default.css');
 
-  if (file_exists(drupal_get_path('theme', 'unl_wdn') . '/codemirror/unl.css')) {
-    drupal_add_css(drupal_get_path('theme', 'unl_wdn') . '/codemirror/unl.css');
-  }
-  else if (file_exists(drupal_get_path('theme', 'unl_four') . '/codemirror/unl.css')) {
-    drupal_add_css(drupal_get_path('theme', 'unl_four') . '/codemirror/unl.css');
-  }
-
   drupal_add_js(drupal_get_path('module', 'unl') . '/unl_codemirror.js');
 
-  drupal_add_library('system', 'ui.resizable');
+  $css = '
+    .CodeMirror {
+      border: 1px solid #CCC;
+      border-top-color: #999;
+      height: auto;
+    }
+    .CodeMirror-scroll {
+      height: 417px;
+    }
+    .CodeMirror pre {
+      font-size: 14px;
+      line-height: 16px;
+    }
+    .codemirror-enabled .grippie {
+      display: none;
+    }
+  ';
+
+  drupal_add_css($css, 'inline');
 
   return $form;
 }
