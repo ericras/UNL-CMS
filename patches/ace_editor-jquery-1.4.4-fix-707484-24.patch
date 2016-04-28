@@ -1,0 +1,26 @@
+diff --git a/js/ace_editor.admin.js b/js/ace_editor.admin.js
+index 29e6da5..1c5214e 100644
+--- a/js/ace_editor.admin.js
++++ b/js/ace_editor.admin.js
+@@ -200,9 +200,20 @@
+     /**
+     * Bind the change event to all text format select lists.
+     */
++
++    // Customize this handler depending on the installed JQuery version,
++    // to ensure compatibility from JQuery 1.4 to 1.9+. Issue #2255597
++    var iCanUseOn = !!$.fn.on;
++    if (iCanUseOn) {
++      var func = 'on';
++    }
++    else {
++      var func = 'live';
++    }
++
+     var toAcify = 'div.text-format-wrapper fieldset.filter-wrapper select.filter-list';
+ 
+-    $(toAcify).change(function(e) {
++    $(toAcify)[func]('change', toAcify, function(e) {
+       var $textFormatWrapper = $(this).parents('div.text-format-wrapper:first');
+       acifyWrapper($textFormatWrapper);
+     });

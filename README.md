@@ -119,6 +119,10 @@ Once that is complete, open a Pull Request against develop in unlcms/UNL-CMS.
 
 ## Hacks of Contrib modules:
 
+  *  ace_editor
+
+     - Incompatibility with jQuery 1.4.4. Applied patch ace_editor-jquery-1.4.4-fix-707484-24.patch. See https://www.drupal.org/node/2255597#comment-11136467
+
   *  draggableviews
 
      - Anonymous view displays an empty form with no submit button which fails webaudit.unl.edu testing. Applied draggableviews-add_hidden_submit_button_to_form-867.patch
